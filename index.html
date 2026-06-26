@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ザジモン — コガネタウンからの冒険</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #7EC8E3;
+    --grass: #5DBB63;
+    --sun: #FFD700;
+    --warm: #FF8C42;
+    --light-bg: #F0F8E8;
+    --light-panel: #FFFFFF;
+    --light-text: #2C3E1F;
+    --light-border: #A8D5A2;
+    --dark-bg: #0D0D12;
+    --dark-panel: #12121A;
+    --dark-text: #C8C0D8;
+    --eerie: #6B2D8B;
+    --blood: #8B1A1A;
+    --ghost: #B8C4CC;
+    --flicker: #4A0E6B;
+    --party-a: #FF6B9D;
+    --party-b: #FFD93D;
+    --party-c: #6BCB77;
+    --party-d: #4D96FF;
+    --pixel: 'DotGothic16', monospace;
+    --body: 'Noto Sans JP', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--body);
+    background: var(--light-bg);
+    color: var(--light-text);
+    transition: background 1.5s, color 1.5s;
+    min-height: 100vh;
+  }
+  body.phase2 { background: var(--dark-bg); color: var(--dark-text); }
+  body.phase3 { background: #FFF9F0; color: #222; }
+
+  header {
+    background: var(--sky);
+    border-bottom: 4px solid var(--grass);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    transition: background 1.5s, border-color 1.5s;
+  }
+  body.phase2 header { background: #0A0A14; border-bottom-color: var(--eerie); }
+  body.phase3 header { background: var(--party-d); border-bottom-color: var(--party-a); }
+
+  .header-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--pixel);
+    font-size: 20px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #2266AA;
+    letter-spacing: 0.05em;
+  }
+  body.phase2 .logo { color: var(--ghost); text-shadow: 0 0 12px var(--eerie); }
+  body.phase3 .logo { color: #fff; text-shadow: 2px 2px 0 var(--party-a); }
+
+  .phase-badge {
+    font-family: var(--pixel);
+    font-size: 11px;
+    background: var(--sun);
+    color: #333;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+  body.phase2 .phase-badge { background: var(--eerie); color: #fff; }
+  body.phase3 .phase-badge { background: var(--party-a); color: #fff; }
+
+  .dialog-box {
+    background: var(--light-panel);
+    border: 3px solid var(--light-text);
+    border-radius: 8px;
+    padding: 20px 24px;
+    position: relative;
+    font-family: var(--pixel);
+    font-size: 15px;
+    line-height: 1.9;
+    box-shadow: 4px 4px 0 var(--light-border);
+    transition: background 1.5s, border-color 1.5s, box-shadow 1.5s;
+  }
+  body.phase2 .dialog-box {
+    background: var(--dark-panel);
+    border-color: var(--eerie);
+    box-shadow: 4px 4px 0 var(--flicker), 0 0 20px rgba(107,45,139,0.3);
+    color: var(--dark-text);
+  }
+  body.phase3 .dialog-box { background: #fff; border-color: var(--party-d); box-shadow: 4px 4px 0 var(--party-b); }
+
+  .dialog-arrow {
+    position: absolute;
+    bottom: 10px;
+    right: 16px;
+    font-size: 14px;
+    animation: blink-arrow 0.8s step-end infinite;
+  }
+  @keyframes blink-arrow { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 32px;
+    text-align: center;
+  }
+  .title-main {
+    font-family: var(--pixel);
+    font-size: clamp(28px, 7vw, 52px);
+    color: var(--grass);
+    text-shadow: 3px 3px 0 var(--light-text);
+    margin-bottom: 8px;
+    transition: color 1.5s, text-shadow 1.5s;
+  }
+  body.phase2 .title-main { color: var(--eerie); text-shadow: 3px 3px 0 #000, 0 0 30px var(--eerie); }
+  body.phase3 .title-main { color: var(--party-a); text-shadow: 3px 3px 0 var(--party-d); }
+
+  .title-sub {
+    font-family: var(--pixel);
+    font-size: 14px;
+    color: var(--warm);
+    margin-bottom: 32px;
+    letter-spacing: 0.1em;
+  }
+  body.phase2 .title-sub { color: var(--blood); }
+  body.phase3 .title-sub { color: var(--party-c); }
+
+  .town-visual {
+    margin: 0 auto 32px;
+    width: 300px;
+    height: 140px;
+    position: relative;
+  }
+  .town-sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #87CEEB 0%, #B8E4F7 100%);
+    border-radius: 8px;
+    transition: background 1.5s;
+  }
+  body.phase2 .town-sky { background: linear-gradient(180deg, #050508 0%, #0D0520 100%); }
+  body.phase3 .town-sky { background: linear-gradient(180deg, #FFD93D 0%, #FF6B9D 100%); }
+
+  .town-ground {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    background: var(--grass);
+    border-radius: 0 0 8px 8px;
+    transition: background 1.5s;
+  }
+  body.phase2 .town-ground { background: #1A0A1A; }
+  body.phase3 .town-ground { background: var(--party-c); }
+
+  .house { position: absolute; bottom: 28px; width: 40px; height: 45px; }
+  .house-body { width: 40px; height: 28px; position: absolute; bottom: 0; }
+  .house-roof { width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-bottom:18px solid; position:absolute; top:-17px; left:-2px; }
+  .house-door { width:10px; height:16px; position:absolute; bottom:0; left:15px; border-radius:5px 5px 0 0; }
+  .h1 { left: 20px; }
+  .h1 .house-body { background: #E8C47A; }
+  .h1 .house-roof { border-bottom-color: #C0392B; }
+  .h1 .house-door { background: #8B4513; }
+  .h2 { left: 80px; width: 55px; height: 60px; }
+  .h2 .house-body { width: 55px; height: 38px; background: #F5DEB3; }
+  .h2 .house-roof { border-left-width:29px; border-right-width:29px; border-bottom-color:#2C6E49; top:-17px; left:-2px; }
+  .h2 .house-door { background: #5D4037; left: 22px; }
+  .h3 { left: 155px; }
+  .h3 .house-body { background: #D4A5A5; }
+  .h3 .house-roof { border-bottom-color: #5B2D8E; }
+  .h3 .house-door { background: #4A2C2A; }
+  .h4 { left: 215px; }
+  .h4 .house-body { background: #A8C5A0; }
+  .h4 .house-roof { border-bottom-color: #8B6914; }
+  .h4 .house-door { background: #3E2723; }
+  .sun-icon { position:absolute; top:14px; right:20px; width:28px; height:28px; background:var(--sun); border-radius:50%; box-shadow:0 0 10px var(--sun); transition:opacity 1.5s; }
+  body.phase2 .sun-icon { opacity: 0; }
+  .moon-icon { position:absolute; top:12px; right:18px; width:26px; height:26px; background:#C8C0D8; border-radius:50%; opacity:0; box-shadow:0 0 14px rgba(200,192,216,0.7); transition:opacity 1.5s; }
+  body.phase2 .moon-icon { opacity: 1; }
+
+  .section { max-width: 720px; margin: 0 auto; padding: 32px 20px; }
+  .section-title {
+    font-family: var(--pixel);
+    font-size: 16px;
+    color: var(--warm);
+    margin-bottom: 16px;
+    padding-left: 12px;
+    border-left: 4px solid var(--warm);
+    transition: color 1.5s, border-color 1.5s;
+  }
+  body.phase2 .section-title { color: var(--eerie); border-left-color: var(--eerie); }
+  body.phase3 .section-title { color: var(--party-a); border-left-color: var(--party-a); }
+
+  .monster-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 20px 0; }
+  .monster-card {
+    background: var(--light-panel);
+    border: 3px solid var(--light-border);
+    border-radius: 8px;
+    padding: 16px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, background 1.5s;
+  }
+  .monster-card:hover { transform: translateY(-3px); }
+  body.phase2 .monster-card { background: var(--dark-panel); border-color: var(--eerie); }
+  body.phase3 .monster-card { border-color: var(--party-b); }
+  .monster-emoji { font-size: 36px; display: block; margin-bottom: 8px; }
+  .monster-name { font-family: var(--pixel); font-size: 13px; color: var(--light-text); transition: color 1.5s; }
+  body.phase2 .monster-name { color: var(--dark-text); }
+  .monster-type { font-size: 11px; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-top: 4px; font-family: var(--pixel); }
+  .type-fire  { background: #FF6B35; color: #fff; }
+  .type-water { background: #4A90D9; color: #fff; }
+  .type-grass { background: #4CAF50; color: #fff; }
+
+  .story-log { border: 2px solid var(--light-border); border-radius: 6px; overflow: hidden; margin: 16px 0; transition: border-color 1.5s; }
+  body.phase2 .story-log { border-color: var(--eerie); }
+  body.phase3 .story-log { border-color: var(--party-c); }
+
+  .log-entry {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--light-border);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: border-color 1.5s, background 1.5s;
+  }
+  body.phase2 .log-entry { border-bottom-color: #2A1A3A; }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry.locked { opacity: 0.4; }
+  .log-num {
+    font-family: var(--pixel);
+    font-size: 11px;
+    background: var(--sky);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    margin-top: 2px;
+    flex-shrink: 0;
+    transition: background 1.5s;
+  }
+  body.phase2 .log-num { background: var(--eerie); }
+  body.phase3 .log-num { background: var(--party-d); }
+  .log-entry.horror .log-num { background: var(--blood); }
+  .log-text { font-size: 13px; line-height: 1.7; }
+
+  .puzzle-block {
+    background: var(--light-panel);
+    border: 3px solid var(--light-text);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 16px 0;
+    box-shadow: 4px 4px 0 var(--light-border);
+    transition: background 1.5s, border-color 1.5s, box-shadow 1.5s;
+  }
+  body.phase2 .puzzle-block { background: #0A0A14; border-color: var(--eerie); box-shadow: 4px 4px 0 var(--flicker); }
+  body.phase3 .puzzle-block { border-color: var(--party-a); box-shadow: 4px 4px 0 var(--party-b); }
+  .puzzle-label { font-family: var(--pixel); font-size: 12px; color: var(--warm); margin-bottom: 10px; transition: color 1.5s; }
+  body.phase2 .puzzle-label { color: var(--ghost); }
+  body.phase3 .puzzle-label { color: var(--party-a); }
+  .puzzle-question { font-family: var(--pixel); font-size: 14px; margin-bottom: 16px; line-height: 1.8; }
+  .answer-row { display: flex; gap: 10px; }
+  .answer-input {
+    flex: 1;
+    background: var(--light-bg);
+    border: 2px solid var(--light-text);
+    color: var(--light-text);
+    font-family: var(--pixel);
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    outline: none;
+    transition: background 1.5s, border-color 0.2s, color 1.5s;
+  }
+  .answer-input:focus { border-color: var(--warm); }
+  body.phase2 .answer-input { background: #050508; border-color: var(--eerie); color: var(--dark-text); }
+  body.phase2 .answer-input:focus { border-color: #C678FF; }
+  body.phase3 .answer-input { border-color: var(--party-d); }
+
+  .btn-submit {
+    background: var(--grass);
+    border: 2px solid var(--light-text);
+    color: #fff;
+    font-family: var(--pixel);
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--light-text);
+    transition: transform 0.1s, background 1.5s;
+    white-space: nowrap;
+  }
+  .btn-submit:hover { transform: translate(1px,1px); box-shadow: 2px 2px 0 var(--light-text); }
+  body.phase2 .btn-submit { background: var(--eerie); box-shadow: 3px 3px 0 #000; }
+  body.phase3 .btn-submit { background: var(--party-a); box-shadow: 3px 3px 0 var(--party-d); }
+
+  .feedback { margin-top: 12px; font-family: var(--pixel); font-size: 13px; min-height: 18px; }
+  .ok { color: var(--grass); }
+  .ng { color: var(--blood); }
+  body.phase3 .ok { color: var(--party-c); }
+
+  .phase-controls {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-top: 2px dashed var(--light-border);
+  }
+  body.phase2 .phase-controls { border-top-color: var(--eerie); }
+  .phase-controls p { font-family: var(--pixel); font-size: 11px; color: #999; width: 100%; margin-bottom: 4px; }
+  .btn-phase { font-family: var(--pixel); font-size: 12px; padding: 8px 16px; border-radius: 4px; border: 2px solid; cursor: pointer; background: transparent; transition: background 0.2s; }
+  .btn-phase.p1 { border-color: var(--grass); color: var(--grass); }
+  .btn-phase.p1:hover { background: var(--grass); color: #fff; }
+  .btn-phase.p2 { border-color: var(--eerie); color: var(--eerie); }
+  .btn-phase.p2:hover { background: var(--eerie); color: #fff; }
+  .btn-phase.p3 { border-color: var(--party-a); color: var(--party-a); }
+  .btn-phase.p3:hover { background: var(--party-a); color: #fff; }
+
+  .horror-text { display:none; font-family:var(--pixel); font-size:13px; color:var(--blood); text-align:center; padding:12px; opacity:0; transition:opacity 1s; }
+  body.phase2 .horror-text { display: block; }
+  body.phase2 .horror-text.visible { opacity: 1; }
+
+  @keyframes horror-flicker { 0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:0.3} 94%{opacity:1} 97%{opacity:0.6} 98%{opacity:1} }
+  body.phase2 { animation: horror-flicker 6s infinite; }
+
+  .confetti-line { display:none; text-align:center; font-size:22px; letter-spacing:0.2em; padding:12px; animation:bounce 0.6s infinite alternate; }
+  @keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-6px)} }
+  body.phase3 .confetti-line { display: block; }
+
+  footer { max-width:720px; margin:40px auto 0; padding:20px; border-top:2px solid var(--light-border); font-family:var(--pixel); font-size:11px; color:#999; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; transition:border-color 1.5s; }
+  body.phase2 footer { border-top-color: var(--eerie); }
+  body.phase3 footer { border-top-color: var(--party-b); }
+
+  @media (max-width: 520px) {
+    .answer-row { flex-direction: column; }
+    .hero { padding-top: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">☆ ザジモン ☆</div>
+    <div class="phase-badge" id="phase-badge">第一章：はじまりのまち</div>
+  </div>
+</header>
+
+<div class="horror-text" id="horror-banner">
+  ･･･ここに　いるのは　だれ？　ランポ、きこえる？　ランポ？
+</div>
+
+<div class="confetti-line">🎉🎊✨🎈🎉🎊✨🎈🎉</div>
+
+<section class="hero">
+  <div class="town-visual">
+    <div class="town-sky"></div>
+    <div class="sun-icon"></div>
+    <div class="moon-icon"></div>
+    <div class="house h1"><div class="house-body"></div><div class="house-roof"></div><div class="house-door"></div></div>
+    <div class="house h2"><div class="house-body"></div><div class="house-roof"></div><div class="house-door"></div></div>
+    <div class="house h3"><div class="house-body"></div><div class="house-roof"></div><div class="house-door"></div></div>
+    <div class="house h4"><div class="house-body"></div><div class="house-roof"></div><div class="house-door"></div></div>
+    <div class="town-ground"></div>
+  </div>
+
+  <div class="title-main" id="main-title">ザジモン</div>
+  <div class="title-sub" id="main-sub">コガネタウンからの冒険</div>
+
+  <div class="dialog-box" style="text-align:left;margin-top:8px;">
+    <div id="dialog-text">
+      ようこそ！　ここは　コガネタウン。<br>
+      きみは　ランポ。<br>
+      今日、ひとりで　さいしょの　たびに　でる日だ。<br>
+      さあ、なかまを　えらぼう！
+    </div>
+    <div class="dialog-arrow">▼</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title" id="monster-label">なかまを　えらんでね</div>
+  <div class="monster-grid">
+    <div class="monster-card" onclick="selectMonster('ザジカゲ','🔥')">
+      <span class="monster-emoji">🦎</span>
+      <div class="monster-name">ザジカゲ</div>
+      <span class="monster-type type-fire">ほのお</span>
+    </div>
+    <div class="monster-card" onclick="selectMonster('ジズガメ','💧')">
+      <span class="monster-emoji">🐢</span>
+      <div class="monster-name">ジズガメ</div>
+      <span class="monster-type type-water">みず</span>
+    </div>
+    <div class="monster-card" onclick="selectMonster('ザジズダネ','🌿')">
+      <span class="monster-emoji">🌱</span>
+      <div class="monster-name">ザジズダネ</div>
+      <span class="monster-type type-grass">くさ</span>
+    </div>
+  </div>
+  <div class="dialog-box" id="monster-dialog" style="display:none;margin-top:12px;">
+    <div id="monster-dialog-text"></div>
+    <div class="dialog-arrow">▼</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title">ぼうけんのきろく</div>
+  <div class="story-log">
+
+    <div class="log-entry" id="log-1">
+      <span class="log-num">01</span>
+      <div>
+        <div class="log-text">
+          ランポはコガネタウンをでた。<br>
+          空は青く、となりのまちまでの道は　きらきらしていた。
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry" id="log-2">
+      <span class="log-num">02</span>
+      <div>
+        <div class="log-text">
+          なぞの　てがみが　とどいた。さしだしにんは「？？？」。
+        </div>
+        <div class="puzzle-block" style="margin-top:14px;">
+          <div class="puzzle-label">★ なぞ その一 ★</div>
+          <div class="puzzle-question">
+            ここに　なぞの　もんだいを　かいてください。<br>
+            ヒント：黄金町の　どこかに　こたえがある。
+          </div>
+          <div class="answer-row">
+            <input class="answer-input" id="ans1" type="text" placeholder="こたえ" maxlength="30"
+              onkeydown="if(event.key==='Enter') check('ans1','こがねちょう','fb1','log-3')">
+            <button class="btn-submit" onclick="check('ans1','こがねちょう','fb1','log-3')">けってい！</button>
+          </div>
+          <div class="feedback" id="fb1"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry locked" id="log-3">
+      <span class="log-num">03</span>
+      <div>
+        <div class="log-text">
+          ランポは　てがみのばしょに　むかった。<br>
+          そこには　だれかの　あしあとがあった。<br>
+          <span style="color:#999;font-size:12px;">（なぞ１を　とくと　ひらく）</span>
+        </div>
+        <div class="puzzle-block" style="margin-top:14px;">
+          <div class="puzzle-label">★ なぞ その二 ★</div>
+          <div class="puzzle-question">
+            ここに　ふたつめの　なぞを　かいてください。<br>
+            上演や展示と　むすびついた　てがかりを　さがせ。
+          </div>
+          <div class="answer-row">
+            <input class="answer-input" id="ans2" type="text" placeholder="こたえ" maxlength="30"
+              onkeydown="if(event.key==='Enter') check('ans2','ザジモン','fb2','log-4')">
+            <button class="btn-submit" onclick="check('ans2','ザジモン','fb2','log-4')">けってい！</button>
+          </div>
+          <div class="feedback" id="fb2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry horror locked" id="log-4" style="display:none;">
+      <span class="log-num">04</span>
+      <div>
+        <div class="log-text" style="color:var(--blood);">
+          よるに　なった。<br>
+          ランポの　ザジモンが　へんな　こえを　だしている。<br>
+          「……ここは　しってる　ばしょ　じゃない」
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry horror" id="log-5" style="display:none;">
+      <span class="log-num">05</span>
+      <div>
+        <div class="log-text" style="color:var(--ghost);">
+          かがみに　うつった　ランポは<br>
+          うしろを　むいていた。
+        </div>
+        <div class="puzzle-block" style="margin-top:14px;">
+          <div class="puzzle-label">★ なぞ その三 ★</div>
+          <div class="puzzle-question">
+            ここに　さんつめの　なぞを　かいてください。<br>
+            演劇の　あのシーンに　こたえがかくされている。
+          </div>
+          <div class="answer-row">
+            <input class="answer-input" id="ans3" type="text" placeholder="こたえ" maxlength="30"
+              onkeydown="if(event.key==='Enter') check('ans3','ザジズー','fb3','log-6')">
+            <button class="btn-submit" onclick="check('ans3','ザジズー','fb3','log-6')">けってい！</button>
+          </div>
+          <div class="feedback" id="fb3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry horror locked" id="log-6" style="display:none;">
+      <span class="log-num">06</span>
+      <div>
+        <div class="log-text" style="color:var(--ghost);">
+          ランポは　おもいだした。<br>
+          ここは　ぜんぶ　しっていた。<br>
+          <span style="color:#555;font-size:12px;">（なぞ３を　とくと　ひらく）</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry" id="log-7" style="display:none;">
+      <span class="log-num">07</span>
+      <div>
+        <div class="log-text" style="color:var(--party-a);font-weight:bold;">
+          🎉　じつは　ぜんぶ　ゆめでした！！！　🎉<br>
+          ランポは　コガネタウンで　ぐっすり　ねむっていた。<br>
+          ザジカゲも　ジズガメも　ザジズダネも<br>
+          まくらのよこで　いびきを　かいていた。
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry" id="log-8" style="display:none;">
+      <span class="log-num">おわり</span>
+      <div>
+        <div class="log-text" style="color:var(--party-d);font-weight:bold;">
+          ありがとうございました！！<br>
+          ザジズーの　えんげきを　みてくれた　きみへ。<br>
+          これが　ホントのはなし　だったかどうかは<br>
+          きみだけが　しっている。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="phase-controls">
+  <p>▼ 運営用フェーズ切替（本番では削除してください）</p>
+  <button class="btn-phase p1" onclick="setPhase(1)">フェーズ1：冒険（明るい）</button>
+  <button class="btn-phase p2" onclick="setPhase(2)">フェーズ2：ホラー（暗い）</button>
+  <button class="btn-phase p3" onclick="setPhase(3)">フェーズ3：終幕（バカ明るい）</button>
+</div>
+
+<footer>
+  <span>ザジモン © ザジズー 2025</span>
+  <span>黄金町ARGプロジェクト</span>
+</footer>
+
+<script>
+  // ━━━━━━━━━━━━━━━━━━━━━
+  //  ★ 運営さんが書き換える場所 ★
+  //  正解ワードをここに入れてください
+  // ━━━━━━━━━━━━━━━━━━━━━
+  const ANSWERS = {
+    ans1: 'こがねちょう',  // ← 謎１の正解
+    ans2: 'ザジモン',      // ← 謎２の正解
+    ans3: 'ザジズー',      // ← 謎３の正解
+  };
+
+  function selectMonster(name, emoji) {
+    const d = document.getElementById('monster-dialog');
+    const t = document.getElementById('monster-dialog-text');
+    d.style.display = 'block';
+    t.innerHTML = 'ランポは　<strong>' + name + '</strong>　' + emoji + '　をえらんだ！<br>ふたりで　たびに　でよう！';
+    localStorage.setItem('partner', name);
+  }
+
+  function normalize(str) {
+    return str
+      .replace(/[\u3041-\u3096]/g, function(c){ return String.fromCharCode(c.charCodeAt(0)+0x60); })
+      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
+      .toUpperCase().trim();
+  }
+
+  function check(inputId, answer, feedbackId, nextId) {
+    var val = document.getElementById(inputId).value.trim();
+    var fb  = document.getElementById(feedbackId);
+    // ANSWERS オブジェクトから正解を取得（直接渡された answer も使える）
+    var correct = ANSWERS[inputId] || answer;
+    if (normalize(val) === normalize(correct)) {
+      fb.innerHTML = '<span class="ok">✓ せいかい！　つぎのとびらが　ひらいた！</span>';
+      document.getElementById(inputId).disabled = true;
+      var next = document.getElementById(nextId);
+      if (next) {
+        next.classList.remove('locked');
+        next.style.display = '';
+        next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      fb.innerHTML = '<span class="ng">✗ ちがう…　もういちど　かんがえてみよう</span>';
+    }
+  }
+
+  function setPhase(n) {
+    var body = document.body;
+    body.classList.remove('phase2','phase3');
+    var badge = document.getElementById('phase-badge');
+    var title = document.getElementById('main-title');
+    var sub   = document.getElementById('main-sub');
+    var dlg   = document.getElementById('dialog-text');
+    var mon   = document.getElementById('monster-label');
+    var horror = document.getElementById('horror-banner');
+
+    if (n === 1) {
+      badge.textContent = '第一章：はじまりのまち';
+      title.textContent = 'ザジモン';
+      sub.textContent   = 'コガネタウンからの冒険';
+      dlg.innerHTML = 'ようこそ！　ここは　コガネタウン。<br>きみは　ランポ。<br>今日、ひとりで　さいしょの　たびに　でる日だ。<br>さあ、なかまを　えらぼう！';
+      mon.textContent   = 'なかまを　えらんでね';
+      ['log-4','log-5','log-6','log-7','log-8'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    if (n === 2) {
+      body.classList.add('phase2');
+      badge.textContent = '第二章：くらいみち';
+      title.textContent = 'ザジモン';
+      sub.textContent   = '…ランポ？　きこえる？';
+      dlg.innerHTML = 'なにかが　おかしい。<br>まちの　ひかりが　きえていく。<br>ザジモンたちが　ふるえている。';
+      mon.textContent   = 'なかまは　どこへ…';
+      setTimeout(function(){ horror.classList.add('visible'); }, 800);
+      ['log-4','log-5'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) { el.style.display = ''; el.classList.remove('locked'); }
+      });
+      ['log-7','log-8'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    if (n === 3) {
+      body.classList.add('phase3');
+      badge.textContent = '最終章：おわりのはじまり？';
+      title.textContent = 'ザジモン！！！';
+      sub.textContent   = 'めでたし　めでたし（たぶん）';
+      dlg.innerHTML = 'すべては　こうなっていたのだ！！<br>ランポよ、きみは　よくがんばった！<br>ザジズーは　ずっと　みていたぞ！！！';
+      mon.textContent   = 'なかまは　ちゃんと　いたよ！';
+      ['log-7','log-8'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) { el.style.display = ''; el.classList.remove('locked'); }
+      });
+    }
+
+    localStorage.setItem('zazimon-phase', n);
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    var saved = localStorage.getItem('zazimon-phase');
+    if (saved) setPhase(parseInt(saved));
+    setTimeout(function(){
+      var h = document.getElementById('horror-banner');
+      if (h && document.body.classList.contains('phase2')) h.classList.add('visible');
+    }, 1200);
+  });
+</script>
+</body>
+</html>
