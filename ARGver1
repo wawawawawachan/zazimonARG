@@ -1,0 +1,974 @@
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ザジズー｜黄金町で逢いまshow</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@300;400;700&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PUBLIC SITE（普通の公演情報）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --ink: #1A1A1A;
+  --paper: #F7F4EE;
+  --accent: #C0392B;
+  --muted: #7A7068;
+  --border: #D8D0C4;
+  --pixel: 'DotGothic16', monospace;
+  --serif: 'Shippori Mincho', serif;
+  --sans: 'Noto Sans JP', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── 公演情報サイト部分 ── */
+#public-site { display: block; }
+
+.pub-header {
+  border-bottom: 2px solid var(--ink);
+  padding: 20px 32px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.pub-logo {
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  color: var(--ink);
+}
+.pub-nav {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  display: flex;
+  gap: 20px;
+}
+.pub-nav a { color: var(--muted); text-decoration: none; }
+.pub-nav a:hover { color: var(--ink); }
+
+.pub-hero {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 64px 32px 48px;
+  border-bottom: 1px solid var(--border);
+}
+.pub-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.pub-title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+.pub-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+.pub-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 40px;
+}
+
+.pub-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  max-width: 560px;
+}
+.pub-info-row {
+  display: contents;
+}
+.pub-info-label {
+  padding: 14px 20px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  background: rgba(0,0,0,0.02);
+}
+.pub-info-value {
+  padding: 14px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.7;
+}
+.pub-info-row:last-child .pub-info-label,
+.pub-info-row:last-child .pub-info-value {
+  border-bottom: none;
+}
+.coming-soon {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  display: inline-block;
+}
+
+.pub-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.pub-section-title {
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+.cast-list {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.cast-item {
+  font-family: var(--serif);
+  font-size: 20px;
+}
+.cast-role {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: 0.1em;
+}
+
+/* 検索フォーム（公演情報サイトの「お問い合わせ」に偽装） */
+.pub-search-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.pub-search-label {
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.pub-search-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.search-form {
+  display: flex;
+  gap: 0;
+  max-width: 440px;
+  border: 1px solid var(--ink);
+}
+.search-input {
+  flex: 1;
+  background: #fff;
+  border: none;
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 12px 16px;
+  outline: none;
+  color: var(--ink);
+}
+.search-input::placeholder { color: #bbb; }
+.search-btn {
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: background 0.2s;
+}
+.search-btn:hover { background: var(--accent); }
+
+.pub-footer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ARG LAYER（隠れた世界）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#arg-layer {
+  display: none;
+  font-family: 'DotGothic16', monospace;
+}
+
+/* ARGページ：ザジモン世界 */
+.arg-page {
+  display: none;
+  min-height: 100vh;
+  background: #F0F8E8;
+  color: #2C3E1F;
+  transition: background 1.5s, color 1.5s;
+}
+.arg-page.horror {
+  background: #0D0D12;
+  color: #C8C0D8;
+}
+.arg-page.party {
+  background: #FFF0F5;
+  color: #222;
+}
+.arg-page.active { display: block; }
+
+/* ARGヘッダー */
+.arg-header {
+  background: #7EC8E3;
+  border-bottom: 4px solid #5DBB63;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background 1.5s, border-color 1.5s;
+}
+.horror .arg-header { background: #0A0A14; border-bottom-color: #6B2D8B; }
+.party .arg-header   { background: #4D96FF; border-bottom-color: #FF6B9D; }
+
+.arg-logo {
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 2px 2px 0 #2266AA;
+}
+.horror .arg-logo { color: #B8C4CC; text-shadow: 0 0 10px #6B2D8B; }
+.party .arg-logo  { color: #fff; text-shadow: 2px 2px 0 #FF6B9D; }
+
+.arg-chapter {
+  font-size: 11px;
+  background: #FFD700;
+  color: #333;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+.horror .arg-chapter { background: #6B2D8B; color: #fff; }
+.party .arg-chapter  { background: #FF6B9D; color: #fff; }
+
+/* ドキュメントビューア（架空記事・日記など） */
+.doc-viewer {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+.doc-card {
+  background: #fff;
+  border: 2px solid #2C3E1F;
+  border-radius: 4px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: 4px 4px 0 #A8D5A2;
+  position: relative;
+}
+.horror .doc-card {
+  background: #12121A;
+  border-color: #6B2D8B;
+  box-shadow: 4px 4px 0 #4A0E6B;
+  color: #C8C0D8;
+}
+.party .doc-card {
+  border-color: #4D96FF;
+  box-shadow: 4px 4px 0 #FFD93D;
+}
+.doc-type {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #FF8C42;
+  margin-bottom: 8px;
+}
+.horror .doc-type { color: #8B1A1A; }
+.party .doc-type  { color: #FF6B9D; }
+
+.doc-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  border-bottom: 1px solid #A8D5A2;
+  padding-bottom: 12px;
+}
+.horror .doc-title { border-bottom-color: #2A1A3A; }
+
+.doc-body {
+  font-size: 13px;
+  line-height: 2;
+}
+.doc-body p { margin-bottom: 12px; }
+
+/* キーワードハイライト（プレイヤーが気づける） */
+.keyword-hint {
+  background: #FFD700;
+  color: #333;
+  padding: 1px 4px;
+  cursor: help;
+  position: relative;
+  font-weight: bold;
+}
+.horror .keyword-hint { background: #6B2D8B; color: #fff; }
+.party .keyword-hint  { background: #FF6B9D; color: #fff; }
+
+/* 謎解き入力 */
+.puzzle-box {
+  background: #fff;
+  border: 3px solid #2C3E1F;
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin: 16px 0;
+  box-shadow: 4px 4px 0 #A8D5A2;
+}
+.horror .puzzle-box { background: #0A0A14; border-color: #6B2D8B; box-shadow: 4px 4px 0 #4A0E6B; }
+.party .puzzle-box  { border-color: #FF6B9D; box-shadow: 4px 4px 0 #FFD93D; }
+
+.puzzle-label {
+  font-size: 11px;
+  color: #FF8C42;
+  margin-bottom: 8px;
+  letter-spacing: 0.2em;
+}
+.horror .puzzle-label { color: #B8C4CC; }
+.party .puzzle-label  { color: #FF6B9D; }
+
+.puzzle-q {
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 1.8;
+}
+
+.ans-row { display: flex; gap: 8px; }
+.ans-input {
+  flex: 1;
+  background: #F0F8E8;
+  border: 2px solid #2C3E1F;
+  color: #2C3E1F;
+  font-family: var(--pixel);
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 3px;
+  outline: none;
+}
+.ans-input:focus { border-color: #FF8C42; }
+.horror .ans-input { background: #050508; border-color: #6B2D8B; color: #C8C0D8; }
+.horror .ans-input:focus { border-color: #C678FF; }
+.party .ans-input { border-color: #4D96FF; }
+
+.ans-btn {
+  background: #5DBB63;
+  border: 2px solid #2C3E1F;
+  color: #fff;
+  font-family: var(--pixel);
+  font-size: 12px;
+  padding: 10px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #2C3E1F;
+  white-space: nowrap;
+  transition: transform 0.1s;
+}
+.ans-btn:hover { transform: translate(1px,1px); box-shadow: 2px 2px 0 #2C3E1F; }
+.horror .ans-btn { background: #6B2D8B; box-shadow: 3px 3px 0 #000; }
+.party .ans-btn  { background: #FF6B9D; box-shadow: 3px 3px 0 #4D96FF; }
+
+.feedback { margin-top: 10px; font-size: 13px; min-height: 18px; }
+.ok  { color: #5DBB63; }
+.ng  { color: #8B1A1A; }
+.party .ok { color: #6BCB77; }
+
+/* モンスター選択 */
+.monster-row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+.mon-card {
+  background: #fff;
+  border: 3px solid #A8D5A2;
+  border-radius: 6px;
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.mon-card:hover { transform: translateY(-3px); border-color: #5DBB63; }
+.horror .mon-card { background: #12121A; border-color: #6B2D8B; }
+.mon-emoji { font-size: 30px; display: block; margin-bottom: 6px; }
+.mon-name  { font-size: 12px; }
+.mon-type  { font-size: 10px; padding: 1px 6px; border-radius: 2px; display: inline-block; margin-top: 3px; }
+.fire  { background:#FF6B35; color:#fff; }
+.water { background:#4A90D9; color:#fff; }
+.grass { background:#4CAF50; color:#fff; }
+
+/* ホラー演出 */
+.horror-msg {
+  display: none;
+  text-align: center;
+  font-size: 13px;
+  color: #8B1A1A;
+  padding: 10px;
+  opacity: 0;
+  transition: opacity 1s;
+}
+.horror .horror-msg { display: block; }
+.horror .horror-msg.show { opacity: 1; }
+@keyframes flicker { 0%,100%{opacity:1} 93%{opacity:0.3} 94%{opacity:1} 97%{opacity:0.7} }
+.horror { animation: flicker 6s infinite; }
+
+/* パーティ演出 */
+.party-msg { display:none; text-align:center; font-size:20px; padding:10px; animation:bounce 0.5s infinite alternate; }
+@keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-5px)} }
+.party .party-msg { display: block; }
+
+/* エンディング選択肢表示 */
+.ending-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+.ending-card {
+  border: 2px solid #A8D5A2;
+  border-radius: 4px;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.7;
+  display: none;
+}
+.ending-card.unlocked { display: block; }
+.ending-card.true-end { border-color: #FFD700; background: #FFFDE7; grid-column: 1/-1; }
+.ending-label { font-size: 10px; letter-spacing: 0.2em; color: #FF8C42; margin-bottom: 6px; }
+
+/* 戻るボタン */
+.back-btn {
+  font-family: var(--pixel);
+  font-size: 12px;
+  background: transparent;
+  border: 2px solid #7A7068;
+  color: #7A7068;
+  padding: 8px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+.back-btn:hover { background: #7A7068; color: #fff; }
+
+/* キーワード収集バッジ */
+.badge-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #A8D5A2;
+  color: #7A7068;
+}
+.badge.got { background: #5DBB63; color: #fff; border-color: #5DBB63; }
+
+@media (max-width: 520px) {
+  .pub-info-grid { grid-template-columns: 1fr; }
+  .pub-info-label { border-right: none; }
+  .ending-grid { grid-template-columns: 1fr; }
+  .ans-row { flex-direction: column; }
+  .pub-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     PUBLIC SITE（普通の公演情報ページ）
+═══════════════════════════════════════ -->
+<div id="public-site">
+
+  <div class="pub-header">
+    <div class="pub-logo">ザジズー</div>
+    <nav class="pub-nav">
+      <a href="#">公演情報</a>
+      <a href="#">出演者</a>
+      <a href="#">アクセス</a>
+      <a href="#">お問い合わせ</a>
+    </nav>
+  </div>
+
+  <div class="pub-hero">
+    <div class="pub-eyebrow">2026 AUTUMN PERFORMANCE</div>
+    <h1 class="pub-title">黄金町で<em>逢いま</em>show</h1>
+    <div class="pub-subtitle">ザジズー presents — 黄金町 × 街と演劇のプロジェクト</div>
+
+    <div class="pub-info-grid">
+      <div class="pub-info-row">
+        <div class="pub-info-label">公演名</div>
+        <div class="pub-info-value">黄金町で逢いまshow</div>
+      </div>
+      <div class="pub-info-row">
+        <div class="pub-info-label">日程</div>
+        <div class="pub-info-value">
+          2026年 9月12日・13日<br>
+          10月10日・11日・12日
+        </div>
+      </div>
+      <div class="pub-info-row">
+        <div class="pub-info-label">会場</div>
+        <div class="pub-info-value">黄金町エリア各所</div>
+      </div>
+      <div class="pub-info-row">
+        <div class="pub-info-label">出演</div>
+        <div class="pub-info-value">ザジ・ズー</div>
+      </div>
+      <div class="pub-info-row">
+        <div class="pub-info-label">チケット</div>
+        <div class="pub-info-value"><span class="coming-soon">COMING SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub-section">
+    <div class="pub-section-title">CAST</div>
+    <div class="cast-list">
+      <div class="cast-item">
+        ザジ
+        <div class="cast-role">performer</div>
+      </div>
+      <div class="cast-item">
+        ズー
+        <div class="cast-role">performer</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub-section" style="font-size:14px;line-height:2;color:#555;max-width:560px;">
+    <div class="pub-section-title">ABOUT</div>
+    黄金町の街そのものを舞台に、<br>
+    あなたの知らない物語が動き出す。<br>
+    上演・展示・街歩き——すべてがひとつの作品です。
+  </div>
+
+  <!-- 検索フォーム（「お問い合わせ」に偽装） -->
+  <div class="pub-search-section">
+    <div class="pub-search-label">SEARCH / お問い合わせ</div>
+    <div class="pub-search-desc">
+      公演に関するキーワードで検索できます。
+    </div>
+    <div class="search-form">
+      <input class="search-input" id="search-input" type="text" placeholder="キーワードを入力"
+        onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="search-btn" onclick="doSearch()">検索</button>
+    </div>
+    <div id="search-error" style="font-size:12px;color:#bbb;margin-top:10px;display:none;">
+      該当する情報は見つかりませんでした。
+    </div>
+  </div>
+
+  <div class="pub-footer">
+    <span>© ザジズー 2026</span>
+    <span>黄金町ARGプロジェクト</span>
+  </div>
+
+</div><!-- /public-site -->
+
+
+<!-- ═══════════════════════════════════════
+     ARG LAYER
+═══════════════════════════════════════ -->
+<div id="arg-layer">
+
+  <!-- ── CHAPTER 1：明るい冒険 ── -->
+  <div class="arg-page" id="page-ch1">
+    <div class="arg-header">
+      <div class="arg-logo">☆ ザジモン ☆</div>
+      <div class="arg-chapter">第一章：はじまりのまち</div>
+    </div>
+
+    <div class="doc-viewer">
+      <button class="back-btn" onclick="goBack()">← もどる</button>
+
+      <!-- 架空の日記 -->
+      <div class="doc-card">
+        <div class="doc-type">// 発見されたファイル：日記帳.txt</div>
+        <div class="doc-title">コガネタウン、最初の朝</div>
+        <div class="doc-body">
+          <p>ランポは今日、はじめてひとりで外に出た。</p>
+          <p>コガネタウンの朝は静かで、川のそばの道はまだ霧がかかっていた。</p>
+          <p>となりのおばさんが言っていた。「この町には、<span class="keyword-hint" title="？">むかし話</span>がたくさん眠っているよ」と。</p>
+          <p>ランポのポケットには、三匹のなかまがいる。</p>
+        </div>
+      </div>
+
+      <!-- なかま選択 -->
+      <div class="doc-card">
+        <div class="doc-type">// なかまを　えらべ</div>
+        <div class="doc-title">さいしょの　なかま</div>
+        <div class="monster-row">
+          <div class="mon-card" onclick="pickMon('ザジカゲ','🦎')">
+            <span class="mon-emoji">🦎</span>
+            <div class="mon-name">ザジカゲ</div>
+            <span class="mon-type fire">ほのお</span>
+          </div>
+          <div class="mon-card" onclick="pickMon('ジズガメ','🐢')">
+            <span class="mon-emoji">🐢</span>
+            <div class="mon-name">ジズガメ</div>
+            <span class="mon-type water">みず</span>
+          </div>
+          <div class="mon-card" onclick="pickMon('ザジズダネ','🌱')">
+            <span class="mon-emoji">🌱</span>
+            <div class="mon-name">ザジズダネ</div>
+            <span class="mon-type grass">くさ</span>
+          </div>
+        </div>
+        <div id="mon-msg" style="font-size:13px;color:#5DBB63;min-height:20px;"></div>
+      </div>
+
+      <!-- 謎１ -->
+      <div class="doc-card">
+        <div class="doc-type">// 架空の新聞記事：黄金新聞 1984年3月号</div>
+        <div class="doc-title">「コガネタウン商店街、今年も賑わう」</div>
+        <div class="doc-body">
+          <p>春の陽射しの中、コガネタウン商店街では今年も恒例の祭りが開かれた。</p>
+          <p>地元の古老・田中氏によれば「この町には昔から<span class="keyword-hint" title="？">ランポ</span>と呼ばれる旅人が訪れると言われている」という。</p>
+          <p>川のほとりに立つ古い看板には、今も読めない文字が刻まれていた。</p>
+        </div>
+
+        <div class="puzzle-box" style="margin-top:16px;">
+          <div class="puzzle-label">★ なぞ その一 ★</div>
+          <div class="puzzle-q">
+            ここに　なぞの　もんだいを　かいてください。<br>
+            例）黄金町の　えきの　そばに　かいてある　ことばは？
+          </div>
+          <div class="ans-row">
+            <input class="ans-input" id="a1" type="text" placeholder="こたえを　いれてね"
+              onkeydown="if(event.key==='Enter') solve('a1','こたえ１','f1','page-ch2')">
+            <button class="ans-btn" onclick="solve('a1','こたえ１','f1','page-ch2')">けってい！</button>
+          </div>
+          <div class="feedback" id="f1"></div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /page-ch1 -->
+
+
+  <!-- ── CHAPTER 2：ホラー ── -->
+  <div class="arg-page horror" id="page-ch2">
+    <div class="arg-header">
+      <div class="arg-logo">☆ ザジモン ☆</div>
+      <div class="arg-chapter">第二章：くらいみち</div>
+    </div>
+
+    <div class="horror-msg" id="horror-msg">
+      ···ランポ？　きこえる？　ランポ？
+    </div>
+
+    <div class="doc-viewer">
+      <button class="back-btn" onclick="showPage('page-ch1')">← もどる</button>
+
+      <!-- 架空の手紙 -->
+      <div class="doc-card">
+        <div class="doc-type">// 発見されたファイル：手紙の断片</div>
+        <div class="doc-title">差出人不明の手紙</div>
+        <div class="doc-body">
+          <p>ランポへ</p>
+          <p>気づいているか。夜になると、この町の灯りがひとつずつ消えていく。</p>
+          <p>川のむこうに、誰も行かない場所がある。</p>
+          <p>鏡を見ろ。うしろに、誰かいる。</p>
+          <p style="color:#8B1A1A;">— ？？？</p>
+        </div>
+      </div>
+
+      <!-- リアルキーワード入力エリア -->
+      <div class="doc-card">
+        <div class="doc-type">// 収集したキーワード</div>
+        <div class="doc-title">てがかりを　あつめよ</div>
+        <div class="doc-body" style="margin-bottom:14px;">
+          リアルの場所や上演・展示でしか手に入らないことばがある。<br>
+          手に入れたものを入力せよ。
+        </div>
+
+        <div class="badge-row" id="badge-row">
+          <span class="badge" id="badge-show">🎫 上演</span>
+          <span class="badge" id="badge-exhibit">🖼 展示</span>
+          <span class="badge" id="badge-poster">📌 ポスター</span>
+        </div>
+
+        <!-- 上演キーワード -->
+        <div class="puzzle-box">
+          <div class="puzzle-label">🎫 上演を見た人だけのことば</div>
+          <div class="puzzle-q">
+            チケットを買って上演を見た人だけが知っている。<br>
+            あのシーンの、あのことばを入力せよ。
+          </div>
+          <div class="ans-row">
+            <input class="ans-input" id="a-show" type="text" placeholder="上演のキーワード"
+              onkeydown="if(event.key==='Enter') collectKey('a-show','上演キーワード','f-show','badge-show','show')">
+            <button class="ans-btn" onclick="collectKey('a-show','上演キーワード','f-show','badge-show','show')">入力</button>
+          </div>
+          <div class="feedback" id="f-show"></div>
+        </div>
+
+        <!-- 展示キーワード -->
+        <div class="puzzle-box">
+          <div class="puzzle-label">🖼 展示を見た人だけのことば</div>
+          <div class="puzzle-q">
+            無料展示の、あの作品のそばに書いてあった。
+          </div>
+          <div class="ans-row">
+            <input class="ans-input" id="a-exhibit" type="text" placeholder="展示のキーワード"
+              onkeydown="if(event.key==='Enter') collectKey('a-exhibit','展示キーワード','f-exhibit','badge-exhibit','exhibit')">
+            <button class="ans-btn" onclick="collectKey('a-exhibit','展示キーワード','f-exhibit','badge-exhibit','exhibit')">入力</button>
+          </div>
+          <div class="feedback" id="f-exhibit"></div>
+        </div>
+
+        <!-- ポスターキーワード -->
+        <div class="puzzle-box">
+          <div class="puzzle-label">📌 街のポスターのことば</div>
+          <div class="puzzle-q">
+            黄金町のどこかに貼られたポスターをよく見よ。
+          </div>
+          <div class="ans-row">
+            <input class="ans-input" id="a-poster" type="text" placeholder="ポスターのキーワード"
+              onkeydown="if(event.key==='Enter') collectKey('a-poster','ポスターキーワード','f-poster','badge-poster','poster')">
+            <button class="ans-btn" onclick="collectKey('a-poster','ポスターキーワード','f-poster','badge-poster','poster')">入力</button>
+          </div>
+          <div class="feedback" id="f-poster"></div>
+        </div>
+
+        <button class="ans-btn" style="margin-top:8px;width:100%;" onclick="goEnding()">
+          → あつめたことばで　さきへ　すすむ
+        </button>
+      </div>
+
+    </div>
+  </div><!-- /page-ch2 -->
+
+
+  <!-- ── ENDING PAGE ── -->
+  <div class="arg-page party" id="page-ending">
+    <div class="arg-header">
+      <div class="arg-logo">☆ ザジモン ☆</div>
+      <div class="arg-chapter" id="ending-chapter">エンディング</div>
+    </div>
+
+    <div class="party-msg">🎉🎊✨🎈🎉🎊✨🎈</div>
+
+    <div class="doc-viewer">
+
+      <!-- エンディング分岐（集めたキーワードによって表示が変わる） -->
+      <div class="ending-grid" id="ending-grid">
+
+        <div class="ending-card" id="end-show">
+          <div class="ending-label">🎫 上演を見た人へ</div>
+          ランポは　あのシーンを　ずっと　おぼえている。<br>
+          舞台の上で、ザジとズーが言ったことば——<br>
+          それは　きみへの　メッセージだった。
+        </div>
+
+        <div class="ending-card" id="end-exhibit">
+          <div class="ending-label">🖼 展示を見た人へ</div>
+          あの作品のそばで、きみは立ち止まった。<br>
+          それだけで　じゅうぶんだった。<br>
+          ランポも　おなじ場所で　たちどまっていた。
+        </div>
+
+        <div class="ending-card" id="end-poster">
+          <div class="ending-label">📌 ポスターを見た人へ</div>
+          街のどこかで　きみは　気づいた。<br>
+          ほとんどの人が　通りすぎるあの場所で。<br>
+          きみだけが　ランポに　会えた。
+        </div>
+
+        <div class="ending-card true-end" id="end-true" style="display:none;">
+          <div class="ending-label">★ 真エンディング — すべてを集めた人へ ★</div>
+          <div style="font-size:15px;line-height:2;margin-bottom:12px;">
+            🎉　じつは　ぜんぶ　ゆめでした！！！　🎉<br>
+            ランポは　コガネタウンで　ぐっすり　ねむっていた。<br>
+            ザジカゲも　ジズガメも　ザジズダネも<br>
+            まくらのよこで　いびきを　かいていた。<br><br>
+            でも——<br>
+            きみが　あつめた　ことばは　ほんものだ。<br>
+            黄金町で　きみが　みたもの、きいたもの、かんじたもの。<br>
+            それが　このものがたりの　ほんとうの　結末だ。
+          </div>
+          <div style="font-size:12px;color:#888;">
+            ザジズーの　えんげきを　みてくれた　きみへ。<br>
+            ありがとう。
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="back-btn" onclick="showPage('page-ch2')">← もどる</button>
+      </div>
+    </div>
+  </div><!-- /page-ending -->
+
+</div><!-- /arg-layer -->
+
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  ★ 運営さんが書き換える場所 ★
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 検索フォームの「魔法のワード」（チラシに書いてある）
+var MAGIC_WORD = 'コガネタウン';
+
+// 各謎の正解
+var ANSWERS = {
+  a1:        'こたえ１',       // ← 謎１の正解をここに書く
+  'a-show':    '上演キーワード',  // ← 上演を見た人だけのキーワード
+  'a-exhibit': '展示キーワード',  // ← 展示のキーワード
+  'a-poster':  'ポスターキーワード', // ← ポスターのキーワード
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 集めたキーワードの状態
+var collected = { show: false, exhibit: false, poster: false };
+
+// 検索フォーム
+function doSearch() {
+  var val = document.getElementById('search-input').value.trim();
+  var err = document.getElementById('search-error');
+  if (normalize(val) === normalize(MAGIC_WORD)) {
+    document.getElementById('public-site').style.display = 'none';
+    document.getElementById('arg-layer').style.display = 'block';
+    showPage('page-ch1');
+  } else {
+    err.style.display = 'block';
+    setTimeout(function(){ err.style.display = 'none'; }, 2000);
+  }
+}
+
+// 公演サイトに戻る
+function goBack() {
+  document.getElementById('public-site').style.display = 'block';
+  document.getElementById('arg-layer').style.display = 'none';
+  document.getElementById('search-input').value = '';
+}
+
+// ページ切替
+function showPage(id) {
+  document.querySelectorAll('.arg-page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'page-ch2') {
+    setTimeout(function(){
+      var h = document.getElementById('horror-msg');
+      if (h) h.classList.add('show');
+    }, 800);
+  }
+}
+
+// モンスター選択
+function pickMon(name, emoji) {
+  document.getElementById('mon-msg').textContent = 'ランポは ' + name + ' ' + emoji + ' をえらんだ！';
+  localStorage.setItem('partner', name);
+}
+
+// 謎解き（次のページへ進む）
+function solve(inputId, answer, fbId, nextPageId) {
+  var val = document.getElementById(inputId).value.trim();
+  var fb  = document.getElementById(fbId);
+  var correct = ANSWERS[inputId] || answer;
+  if (normalize(val) === normalize(correct)) {
+    fb.innerHTML = '<span class="ok">✓ せいかい！　さきへ　すすもう！</span>';
+    document.getElementById(inputId).disabled = true;
+    setTimeout(function(){ showPage(nextPageId); }, 800);
+  } else {
+    fb.innerHTML = '<span class="ng">✗ ちがう…　もういちど　かんがえてみよう</span>';
+  }
+}
+
+// リアルキーワード収集
+function collectKey(inputId, answer, fbId, badgeId, key) {
+  var val = document.getElementById(inputId).value.trim();
+  var fb  = document.getElementById(fbId);
+  var correct = ANSWERS[inputId] || answer;
+  if (normalize(val) === normalize(correct)) {
+    fb.innerHTML = '<span class="ok">✓ キーワードを　手に入れた！</span>';
+    document.getElementById(inputId).disabled = true;
+    document.getElementById(badgeId).classList.add('got');
+    collected[key] = true;
+    localStorage.setItem('collected', JSON.stringify(collected));
+  } else {
+    fb.innerHTML = '<span class="ng">✗ ちがう…</span>';
+  }
+}
+
+// エンディングへ
+function goEnding() {
+  var any = collected.show || collected.exhibit || collected.poster;
+  if (!any) {
+    alert('まだ　てがかりが　あつまっていない…\nリアルの場所や上演・展示に　行ってみよう！');
+    return;
+  }
+  // 収集状況によってエンディングを表示
+  if (collected.show)    { document.getElementById('end-show').classList.add('unlocked'); }
+  if (collected.exhibit) { document.getElementById('end-exhibit').classList.add('unlocked'); }
+  if (collected.poster)  { document.getElementById('end-poster').classList.add('unlocked'); }
+  // 全部集めたら真エンディング
+  if (collected.show && collected.exhibit && collected.poster) {
+    document.getElementById('end-true').style.display = 'block';
+    document.getElementById('ending-chapter').textContent = '★ 真エンディング ★';
+  }
+  showPage('page-ending');
+}
+
+// 文字正規化（全角・ひら・カタ対応）
+function normalize(str) {
+  return str
+    .replace(/[\u3041-\u3096]/g, function(c){ return String.fromCharCode(c.charCodeAt(0)+0x60); })
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); })
+    .toUpperCase().trim();
+}
+
+// 保存データ復元
+window.addEventListener('DOMContentLoaded', function() {
+  var saved = localStorage.getItem('collected');
+  if (saved) {
+    try {
+      collected = JSON.parse(saved);
+      if (collected.show)    document.getElementById('badge-show').classList.add('got');
+      if (collected.exhibit) document.getElementById('badge-exhibit').classList.add('got');
+      if (collected.poster)  document.getElementById('badge-poster').classList.add('got');
+    } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>
+HTMLEOF
